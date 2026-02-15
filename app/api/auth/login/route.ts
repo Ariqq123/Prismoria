@@ -29,6 +29,8 @@ export async function POST(request: Request) {
   }
 
   const hash = await bcrypt.hash(password, 10);
+  let storageSynced = true;
+
   try {
     await prisma.user.upsert({
       where: { email: getAdminEmail() },
@@ -36,22 +38,14 @@ export async function POST(request: Request) {
       create: { email: getAdminEmail(), passwordHash: hash }
     });
   } catch (error) {
-    console.error("Failed to sync admin user in database during login.", error);
-
-    if (contentType.includes("application/json")) {
-      return NextResponse.json(
-        { error: "Authentication storage is unavailable. Please try again later." },
-        { status: 503 }
-      );
-    }
-
-    return NextResponse.redirect(new URL("/login?error=auth_storage_unavailable", request.url));
+    storageSynced = false;
+    console.error("Failed to sync admin user in database during login; continuing with session-only auth.", error);
   }
 
   createSessionCookie(email);
 
   if (contentType.includes("application/json")) {
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, storageSynced });
   }
 
   return NextResponse.redirect(new URL("/dashboard", request.url));
