@@ -22,6 +22,10 @@ npm install
 cp .env.example .env
 ```
 
+> For Vercel production deployments, do **not** use `localhost` in `DATABASE_URL`.
+> `localhost` in serverless functions points to the function container itself, not your managed database.
+> Use your provider host (for example Neon/Supabase/RDS hostname) and required SSL params.
+
 3. Initialize database:
 
 ```bash
