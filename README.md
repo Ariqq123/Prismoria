@@ -46,3 +46,6 @@ npm run dev
 Override via env vars:
 - `ADMIN_EMAIL`
 - `ADMIN_PASSWORD` or `ADMIN_PASSWORD_HASH`
+
+For local testing without login/session, set:
+- `DISABLE_AUTH="true"`
