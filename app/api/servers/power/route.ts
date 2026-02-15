@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     include: { panelConnections: true }
   });
 
-  const connection = user?.panelConnections.find((item) => item.panelSlug === body.panelSlug);
+  const connection = user?.panelConnections.find((item: { panelSlug: string }) => item.panelSlug === body.panelSlug);
   if (!connection) {
     return NextResponse.json({ error: "Panel is not connected." }, { status: 404 });
   }

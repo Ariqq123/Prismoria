@@ -20,13 +20,14 @@ export async function GET() {
   }
 
   const responses = await Promise.allSettled(
-    user.panelConnections.map((connection) =>
+    user.panelConnections.map((connection: { panelSlug: string; apiKeyEnc: string }) =>
       fetchPanelServers(connection.panelSlug as PanelSlug, decryptApiKey(connection.apiKeyEnc))
     )
   );
 
-  const servers = responses.flatMap((result) =>
-    result.status === "fulfilled" ? result.value : []
+  const servers = responses.flatMap(
+    (result: PromiseSettledResult<Awaited<ReturnType<typeof fetchPanelServers>>>) =>
+      result.status === "fulfilled" ? result.value : []
   );
 
   return NextResponse.json({ servers, total: servers.length });
